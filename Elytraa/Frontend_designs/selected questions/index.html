@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Path Finder Quiz</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts - Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="quiz-container">
+          <!-- Welcome Screen -->
+          <div id="welcome-screen" class="screen active">
+            <div class="text-center py-5">
+              <div class="emoji-container mb-4">
+                <span class="emoji">🎓</span>
+                <span class="emoji">💬</span>
+                <span class="emoji">✨</span>
+              </div>
+              <h1 class="fw-bold mb-3">Let's Find Your Ideal College Path!</h1>
+              <p class="text-muted mb-5">Answer 6 quick & fun questions 🎉</p>
+              <button id="start-quiz-btn" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">
+                Start Quiz 🚀 <i class="fas fa-arrow-right ms-2"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quiz Screen -->
+          <div id="quiz-screen" class="screen">
+            <div class="quiz-header mb-4">
+              <div class="d-flex justify-content-between text-muted small mb-2">
+                <span id="question-counter">Question 1/6</span>
+                <span id="progress-percentage">17% Complete</span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 17%;" aria-valuenow="17" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+
+            <!-- Question 1: Stream -->
+            <div id="stream-question" class="question-container active">
+              <h2 class="fw-bold mb-3">What was your stream in school?</h2>
+              
+              <div class="options-container">
+                <div class="option-card" data-value="science">
+                  <div class="d-flex align-items-center">
+                    <div class="option-emoji me-3">🔬</div>
+                    <div class="option-label">Science</div>
+                  </div>
+                </div>
+                <div class="option-card" data-value="commerce">
+                  <div class="d-flex align-items-center">
+                    <div class="option-emoji me-3">📈</div>
+                    <div class="option-label">Commerce</div>
+                  </div>
+                </div>
+                <div class="option-card" data-value="arts">
+                  <div class="d-flex align-items-center">
+                    <div class="option-emoji me-3">🎨</div>
+                    <div class="option-label">Arts</div>
+                  </div>
+                </div>
+                <div class="option-card" data-value="not-sure">
+                  <div class="d-flex align-items-center">
+                    <div class="option-emoji me-3">🤷</div>
+                    <div class="option-label">Not Sure</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Question 2: Subjects -->
+            <div id="subjects-question" class="question-container">
+              <h2 class="fw-bold mb-2">Which subject actually made sense to you?</h2>
+              <span class="badge bg-light text-dark border mb-4">Select multiple if you want</span>
+              
+              <div class="options-grid">
+                <div class="option-card-small" data-value="chemistry">
+                  <div class="option-emoji">🧪</div>
+                  <div class="option-label">Chemistry</div>
+                </div>
+                <div class="option-card-small" data-value="maths">
+                  <div class="option-emoji">🔢</div>
+                  <div class="option-label">Maths</div>
+                </div>
+                <div class="option-card-small" data-value="computers">
+                  <div class="option-emoji">💻</div>
+                  <div class="option-label">Computers</div>
+                </div>
+                <div class="option-card-small" data-value="english">
+                  <div class="option-emoji">💬</div>
+                  <div class="option-label">English</div>
+                </div>
+                <div class="option-card-small" data-value="geography">
+                  <div class="option-emoji">🌍</div>
+                  <div class="option-label">Geography</div>
+                </div>
+                <div class="option-card-small" data-value="business">
+                  <div class="option-emoji">📚</div>
+                  <div class="option-label">Business</div>
+                </div>
+                <div class="option-card-small" data-value="drawing">
+                  <div class="option-emoji">🖼️</div>
+                  <div class="option-label">Drawing</div>
+                </div>
+                <div class="option-card-small" data-value="music">
+                  <div class="option-emoji">🎵</div>
+                  <div class="option-label">Music</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Question 3: Interests -->
+            <div id="interests-question" class="question-container">
+              <h2 class="fw-bold mb-2">What kind of stuff gets you curious or pumped?</h2>
+              <p class="small text-muted mb-4">Swipe right if you like it, left if you don't</p>
+              
+              <div class="swipe-container">
+                <div id="swipe-card" class="swipe-card">
+                  <div class="swipe-emoji"></div>
+                  <div class="swipe-label"></div>
+                  <div class="swipe-indicator-right">
+                    <i class="fas fa-check"></i>
+                  </div>
+                  <div class="swipe-indicator-left">
+                    <i class="fas fa-times"></i>
+                  </div>
+                </div>
+                <div class="swipe-done-message">
+                  <p class="text-muted">All done! Click Next to continue.</p>
+                </div>
+              </div>
+              
+              <div class="swipe-indicators mt-4">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <!-- Question 4: Dream Job -->
+            <div id="dream-job-question" class="question-container">
+              <h2 class="fw-bold mb-3">What job title sounds exciting to you right now?</h2>
+              
+              <div class="options-grid dream-job-grid">
+                <div class="option-card-small" data-value="doctor">
+                  <div class="option-emoji">👨‍⚕️</div>
+                  <div class="option-label">Doctor</div>
+                </div>
+                <div class="option-card-small" data-value="developer">
+                  <div class="option-emoji">👨‍💻</div>
+                  <div class="option-label">Software Developer</div>
+                </div>
+                <div class="option-card-small" data-value="designer">
+                  <div class="option-emoji">🎨</div>
+                  <div class="option-label">Graphic Designer</div>
+                </div>
+                <div class="option-card-small" data-value="analyst">
+                  <div class="option-emoji">📊</div>
+                  <div class="option-label">Data Analyst</div>
+                </div>
+                <div class="option-card-small" data-value="filmmaker">
+                  <div class="option-emoji">🎥</div>
+                  <div class="option-label">Filmmaker</div>
+                </div>
+                <div class="option-card-small" data-value="teacher">
+                  <div class="option-emoji">🧑‍🏫</div>
+                  <div class="option-label">Teacher</div>
+                </div>
+                <div class="option-card-small" data-value="lawyer">
+                  <div class="option-emoji">👩‍⚖️</div>
+                  <div class="option-label">Lawyer</div>
+                </div>
+                <div class="option-card-small" data-value="entrepreneur">
+                  <div class="option-emoji">🛍️</div>
+                  <div class="option-label">Entrepreneur</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Question 5: Fee Budget -->
+            <div id="fee-budget-question" class="question-container">
+              <h2 class="fw-bold mb-3">What's your yearly budget for college?</h2>
+              
+              <div class="fee-buttons-container">
+                <button class="fee-button" data-value="0-50k">
+                  ₹0 – ₹50K
+                </button>
+                <button class="fee-button" data-value="50k-1l">
+                  ₹50K – ₹1L
+                </button>
+                <button class="fee-button" data-value="1l-2l">
+                  ₹1L – ₹2L
+                </button>
+                <button class="fee-button" data-value="2l-3l">
+                  ₹2L – ₹3L
+                </button>
+                <button class="fee-button" data-value="3l-plus">
+                  ₹3L+
+                </button>
+              </div>
+            </div>
+
+            <!-- Question 6: College Location -->
+            <div id="location-question" class="question-container">
+              <h2 class="fw-bold mb-3">Where would you love to study?</h2>
+              <span class="badge bg-light text-dark border mb-4">Select multiple if you want</span>
+              
+              <div class="options-grid location-grid">
+                <div class="option-card-small" data-value="mumbai">
+                  <div class="option-emoji">🏙️</div>
+                  <div class="option-label">Mumbai</div>
+                </div>
+                <div class="option-card-small" data-value="dehradun">
+                  <div class="option-emoji">🏞️</div>
+                  <div class="option-label">Dehradun</div>
+                </div>
+                <div class="option-card-small" data-value="pune">
+                  <div class="option-emoji">📚</div>
+                  <div class="option-label">Pune</div>
+                </div>
+                <div class="option-card-small" data-value="my-city">
+                  <div class="option-emoji">🏡</div>
+                  <div class="option-label">Stay in my city</div>
+                </div>
+                <div class="option-card-small" data-value="anywhere">
+                  <div class="option-emoji">🚀</div>
+                  <div class="option-label">Open to relocating anywhere</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="quiz-navigation mt-4 d-flex justify-content-between">
+              <button id="prev-btn" class="btn btn-outline-secondary px-4">
+                <i class="fas fa-chevron-left me-2"></i> Back
+              </button>
+              <button id="next-btn" class="btn btn-primary px-4">
+                Next <i class="fas fa-chevron-right ms-2"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Info Form Screen -->
+          <div id="info-form-screen" class="screen">
+            <div class="text-center mb-4">
+              <div class="emoji-container mb-3">🎉</div>
+              <h1 class="fw-bold mb-3">Awesome!</h1>
+              <p class="text-muted mb-4">Just tell us a bit about you so we can send the right colleges 📩</p>
+            </div>
+
+            <form id="user-info-form" class="user-info-form">
+              <div class="mb-3">
+                <label for="fullName" class="form-label">
+                  <span class="form-emoji">👤</span> Full Name
+                </label>
+                <input type="text" class="form-control" id="fullName" placeholder="Your name" required>
+              </div>
+              
+              <div class="mb-3">
+                <label for="score" class="form-label">
+                  <span class="form-emoji">📊</span> 12th Score (in %)
+                </label>
+                <input type="number" class="form-control" id="score" placeholder="Your percentage" min="0" max="100" required>
+              </div>
+              
+              <div class="mb-3">
+                <label for="email" class="form-label">
+                  <span class="form-emoji">📧</span> Email ID
+                </label>
+                <input type="email" class="form-control" id="email" placeholder="Your email" required>
+              </div>
+              
+              <div class="mb-3">
+                <label for="mobile" class="form-label">
+                  <span class="form-emoji">📱</span> Mobile Number
+                </label>
+                <input type="tel" class="form-control" id="mobile" placeholder="Your mobile number" required>
+              </div>
+              
+              <div class="mb-4">
+                <label for="city" class="form-label">
+                  <span class="form-emoji">🏡</span> City
+                </label>
+                <input type="text" class="form-control" id="city" placeholder="Your city" required>
+              </div>
+              
+              <div class="d-grid">
+                <button type="submit" id="submit-form-btn" class="btn btn-primary btn-lg py-3">
+                  Show Me Matching Colleges 🔍
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Results Screen -->
+          <div id="results-screen" class="screen">
+            <div class="text-center mb-4">
+              <div class="emoji-container mb-3">🎓</div>
+              <div class="top-match-badge mb-3">Top Match 🎯</div>
+              <h1 class="fw-bold mb-3">Your College Path Awaits!</h1>
+              <p id="result-summary" class="text-muted"></p>
+            </div>
+
+            <div class="mb-4">
+              <h2 class="fw-bold mb-3">Top Course Recommendations</h2>
+              <div id="recommendations-container">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <h2 class="fw-bold mb-3">Suggested Colleges</h2>
+              <div id="colleges-container">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <div class="d-grid gap-3">
+              <button class="btn btn-primary btn-lg py-3">
+                Find More Colleges <i class="fas fa-arrow-right ms-2"></i>
+              </button>
+              <button class="btn btn-outline-primary btn-lg py-3">
+                Talk to a Counselor <i class="fas fa-headset ms-2"></i>
+              </button>
+              <button class="btn btn-outline-secondary btn-lg py-3">
+                Share Results <i class="fas fa-share-alt ms-2"></i>
+              </button>
+              <button id="retake-btn" class="btn btn-outline-secondary btn-lg py-3">
+                Retake Quiz <i class="fas fa-redo ms-2"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Confirmation Message -->
+          <div id="confirmation-screen" class="screen">
+            <div class="text-center py-5">
+              <div class="emoji-container mb-4">
+                <span class="emoji">🔍</span>
+                <span class="emoji">📚</span>
+                <span class="emoji">🎓</span>
+              </div>
+              <h1 class="fw-bold mb-3">Got it!</h1>
+              <p class="text-muted mb-4">Finding colleges that match your goals...</p>
+              <div class="spinner-container mb-4">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+              <p class="small text-muted">This will just take a moment</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Hammer.js for touch gestures -->
+  <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+  <!-- Custom JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>

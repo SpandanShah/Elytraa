@@ -1,0 +1,18 @@
+V0.1
+-> Website - Student Sign up page
+    Form where student will answer the set of interdependent questions (location (state as we are only for India), budget, interest, Preferred mode (distance)) which will run through the algo, and provide the best fitting 10 Universities to the student.
+    
+    First universities will be filtered from the stucents filter and from the shortlisted we will socre them
+    Score - How to Rank the uni
+                University score (of that course), Degree Score
+                    -> University Score - Infrastructure score,  Course score, Extra curricular score, Patents score, Fees score, Alumni score
+                        -> Infrastructure Score - labs, Premises(land area) and area(which area), sports grounds and equipements.
+                        -> Course Score - Faculty score for that perticular Course, Placement score, Curriculum score, relevant electives for perticular course
+                            -> Faculty Score - Research Papers, relevance to the course topic (research parper * experience), Patents and Experience, Industry experience, Student Feedback
+                            -> Placement score - Avg placement % (from total strength), Placemnt amounts
+                            -> Curriculum score - Curriculum related to subjects
+                        -> Extra Curricular Course - Fest, activities, functions, workshops
+                        -> Patent Score - Number of patents (for ex. 1-3 patents than 10 score)
+                        -> Fees score - As per student budget range, and college's scholarship
+                        -> Alumni score - Total successful alumni if yes (for ex. 1-3 alumni than 10 score)
+

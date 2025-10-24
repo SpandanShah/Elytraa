@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Path Finder Quiz</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="quiz-container">
+          <!-- Welcome Screen -->
+          <div id="welcome-screen" class="screen active">
+            <div class="text-center py-5">
+              <div class="emoji-container mb-4">
+                <span class="emoji">🎓</span>
+                <span class="emoji">✨</span>
+                <span class="emoji">📘</span>
+              </div>
+              <h1 class="fw-bold mb-3">Ready to discover your ideal college path?</h1>
+              <p class="text-muted mb-5">Just answer a few fun questions!</p>
+              <button id="start-quiz-btn" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">
+                Let's Begin 🚀 <i class="fas fa-sparkles ms-2"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quiz Screen -->
+          <div id="quiz-screen" class="screen">
+            <div class="quiz-header mb-4">
+              <!-- Update the progress counter to show 10 questions instead of 3 -->
+              <div class="d-flex justify-content-between text-muted small mb-2">
+                <span id="question-counter">Question 1/10</span>
+                <span id="progress-percentage">10% Complete</span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 33%;" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+
+            <!-- Stream Question -->
+            <div id="stream-question" class="question-container active">
+              <h2 class="fw-bold mb-2">What was your 12th stream?</h2>
+              <p class="text-muted fst-italic mb-4">Let's start with the basics — what world were you living in for the past 2 years?</p>
+              
+              <div class="options-container">
+                <div class="option-card" data-value="science">
+                  <div class="d-flex align-items-center">
+                    <div class="option-emoji me-3">🔬</div>
+                    <div class="option-label">Science</div>
+                  </div>
+                </div>
+                <div class="option-card" data-value="commerce">
+                  <div class="d-flex align-items-center">
+                    <div class="option-emoji me-3">📈</div>
+                    <div class="option-label">Commerce</div>
+                  </div>
+                </div>
+                <div class="option-card" data-value="arts">
+                  <div class="d-flex align-items-center">
+                    <div class="option-emoji me-3">🎨</div>
+                    <div class="option-label">Arts</div>
+                  </div>
+                </div>
+                <div class="option-card" data-value="not-sure">
+                  <div class="d-flex align-items-center">
+                    <div class="option-emoji me-3">🤷‍♂️</div>
+                    <div class="option-label">Not Sure / Mixed Subjects</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Subjects Question -->
+            <div id="subjects-question" class="question-container">
+              <h2 class="fw-bold mb-2">Which subject did you <em>actually</em> enjoy?</h2>
+              <p class="text-muted fst-italic mb-2">Be honest. Which class didn't feel like torture?</p>
+              <span class="badge bg-light text-dark border mb-4">Select up to 3</span>
+              
+              <div class="options-grid">
+                <div class="option-card-small" data-value="chemistry">
+                  <div class="option-emoji">🧪</div>
+                  <div class="option-label">Chemistry</div>
+                </div>
+                <div class="option-card-small" data-value="maths">
+                  <div class="option-emoji">🔢</div>
+                  <div class="option-label">Maths</div>
+                </div>
+                <div class="option-card-small" data-value="geography">
+                  <div class="option-emoji">🌍</div>
+                  <div class="option-label">Geography</div>
+                </div>
+                <div class="option-card-small" data-value="computers">
+                  <div class="option-emoji">💻</div>
+                  <div class="option-label">Computers</div>
+                </div>
+                <div class="option-card-small" data-value="english">
+                  <div class="option-emoji">💬</div>
+                  <div class="option-label">English</div>
+                </div>
+                <div class="option-card-small" data-value="drawing">
+                  <div class="option-emoji">🖼️</div>
+                  <div class="option-label">Drawing</div>
+                </div>
+                <div class="option-card-small" data-value="business">
+                  <div class="option-emoji">📚</div>
+                  <div class="option-label">Business</div>
+                </div>
+                <div class="option-card-small" data-value="music">
+                  <div class="option-emoji">🎵</div>
+                  <div class="option-label">Music</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Interests Question -->
+            <div id="interests-question" class="question-container">
+              <h2 class="fw-bold mb-2">What kind of stuff excites you?</h2>
+              <p class="text-muted fst-italic mb-2">What makes your brain go 'Yesss this is fun!'?</p>
+              <p class="small text-muted mb-4">Swipe right if you like it, left if you don't</p>
+              
+              <div class="swipe-container">
+                <div id="swipe-card" class="swipe-card">
+                  <div class="swipe-emoji"></div>
+                  <div class="swipe-label"></div>
+                  <div class="swipe-indicator-right">
+                    <i class="fas fa-check"></i>
+                  </div>
+                  <div class="swipe-indicator-left">
+                    <i class="fas fa-times"></i>
+                  </div>
+                </div>
+                <div class="swipe-done-message">
+                  <p class="text-muted">All done! Click Next to see your results.</p>
+                </div>
+              </div>
+              
+              <div class="swipe-indicators mt-4">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <!-- Add the new question containers after the interests-question div -->
+            <!-- Question 4: Learning Style -->
+            <div id="learning-style-question" class="question-container">
+              <h2 class="fw-bold mb-2">How do you prefer to learn?</h2>
+              <p class="text-muted fst-italic mb-4">If you had to study all day, what method would make it bearable?</p>
+              
+              <div class="toggle-options-container">
+                <div class="toggle-option" data-value="theory-reading">
+                  <div class="option-emoji">📖</div>
+                  <div class="option-label">Theory-heavy & reading</div>
+                </div>
+                <div class="toggle-option" data-value="practical-hands-on">
+                  <div class="option-emoji">🧪</div>
+                  <div class="option-label">Practical & hands-on</div>
+                </div>
+                <div class="toggle-option" data-value="coach-mentor">
+                  <div class="option-emoji">👨‍🏫</div>
+                  <div class="option-label">With a coach or mentor</div>
+                </div>
+                <div class="toggle-option" data-value="watching-videos">
+                  <div class="option-emoji">🎬</div>
+                  <div class="option-label">Watching videos</div>
+                </div>
+                <div class="toggle-option" data-value="online-own-pace">
+                  <div class="option-emoji">💻</div>
+                  <div class="option-label">Online at my own pace</div>
+                </div>
+                <div class="toggle-option" data-value="mix-everything">
+                  <div class="option-emoji">🔀</div>
+                  <div class="option-label">A mix of everything</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Question 5: Long-term Dream Path -->
+            <div id="dream-path-question" class="question-container">
+              <h2 class="fw-bold mb-2">What's your long-term dream path?</h2>
+              <p class="text-muted fst-italic mb-4">No pressure — just pick the vibe that calls to you!</p>
+              
+              <div class="options-grid dream-path-grid">
+                <div class="option-card-small" data-value="tech-engineering">
+                  <div class="option-emoji">🧑‍💻</div>
+                  <div class="option-label">Tech / Engineering</div>
+                </div>
+                <div class="option-card-small" data-value="business-management">
+                  <div class="option-emoji">🏢</div>
+                  <div class="option-label">Business / Management</div>
+                </div>
+                <div class="option-card-small" data-value="design-creative">
+                  <div class="option-emoji">🎨</div>
+                  <div class="option-label">Design / Creative</div>
+                </div>
+                <div class="option-card-small" data-value="law-civil-services">
+                  <div class="option-emoji">⚖️</div>
+                  <div class="option-label">Law / Civil Services</div>
+                </div>
+                <div class="option-card-small" data-value="medicine-healthcare">
+                  <div class="option-emoji">🏥</div>
+                  <div class="option-label">Medicine / Healthcare</div>
+                </div>
+                <div class="option-card-small" data-value="media-entertainment">
+                  <div class="option-emoji">🎤</div>
+                  <div class="option-label">Media / Entertainment</div>
+                </div>
+                <div class="option-card-small" data-value="still-figuring-out">
+                  <div class="option-emoji">❓</div>
+                  <div class="option-label">Still figuring it out</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Question 6: Study Location -->
+            <div id="study-location-question" class="question-container">
+              <h2 class="fw-bold mb-2">Where would you love to study?</h2>
+              <p class="text-muted fst-italic mb-4">Think about your dream study environment.</p>
+              
+              <div class="location-cards-container">
+                <div class="location-card" data-value="big-city">
+                  <div class="option-emoji">🏙️</div>
+                  <div class="option-label">Big city with hustle</div>
+                </div>
+                <div class="location-card" data-value="campus-nature">
+                  <div class="option-emoji">🌳</div>
+                  <div class="option-label">Campus in nature</div>
+                </div>
+                <div class="location-card" data-value="small-town">
+                  <div class="option-emoji">🏡</div>
+                  <div class="option-label">Small peaceful town</div>
+                </div>
+                <div class="location-card" data-value="close-home">
+                  <div class="option-emoji">🏠</div>
+                  <div class="option-label">Close to home</div>
+                </div>
+                <div class="location-card" data-value="anywhere">
+                  <div class="option-emoji">🎲</div>
+                  <div class="option-label">Anywhere's fine if it's good</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Question 7: Language Preference -->
+            <div id="language-question" class="question-container">
+              <h2 class="fw-bold mb-2">What's your preferred language to learn in?</h2>
+              <p class="text-muted fst-italic mb-4">We'll filter based on this if needed.</p>
+              
+              <div class="language-buttons-container">
+                <button class="language-button" data-value="english">
+                  <span class="flag-emoji">🇬🇧</span> English
+                </button>
+                <button class="language-button" data-value="hindi">
+                  <span class="flag-emoji">🇮🇳</span> Hindi
+                </button>
+                <button class="language-button" data-value="regional">
+                  <span class="flag-emoji">🌐</span> Regional language
+                </button>
+                <button class="language-button" data-value="mix">
+                  <span class="flag-emoji">🔁</span> Mix of English + regional
+                </button>
+              </div>
+            </div>
+
+            <!-- Question 8: Fee Budget -->
+            <div id="fee-budget-question" class="question-container">
+              <h2 class="fw-bold mb-2">What's your fee budget per year?</h2>
+              <p class="text-muted fst-italic mb-4">Money matters! Don't worry — we'll show scholarships too.</p>
+              
+              <div class="fee-buttons-container">
+                <button class="fee-button" data-value="0-50k">
+                  <span class="fee-emoji">💸</span> ₹0–₹50,000
+                </button>
+                <button class="fee-button" data-value="50k-1l">
+                  <span class="fee-emoji">💰</span> ₹50,000–₹1,00,000
+                </button>
+                <button class="fee-button" data-value="1l-2l">
+                  <span class="fee-emoji">💼</span> ₹1,00,000–₹2,00,000
+                </button>
+                <button class="fee-button" data-value="2l-plus">
+                  <span class="fee-emoji">🏛️</span> ₹2L+ (comfortable)
+                </button>
+              </div>
+            </div>
+
+            <!-- Question 9: Relocation Preference -->
+            <div id="relocation-question" class="question-container">
+              <h2 class="fw-bold mb-2">How far are you willing to relocate?</h2>
+              <p class="text-muted fst-italic mb-4">Some colleges need travel — let us know your comfort level.</p>
+              
+              <div class="relocation-options-container">
+                <div class="relocation-option" data-value="my-city">
+                  <div class="option-emoji">🏠</div>
+                  <div class="option-label">Only in my city</div>
+                </div>
+                <div class="relocation-option" data-value="my-state">
+                  <div class="option-emoji">🗺️</div>
+                  <div class="option-label">Within my state</div>
+                </div>
+                <div class="relocation-option" data-value="india">
+                  <div class="option-emoji">🇮🇳</div>
+                  <div class="option-label">Anywhere in India</div>
+                </div>
+                <div class="relocation-option" data-value="abroad">
+                  <div class="option-emoji">✈️</div>
+                  <div class="option-label">Open to abroad</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Question 10: Career Path Certainty -->
+            <div id="certainty-question" class="question-container">
+              <h2 class="fw-bold mb-2">How sure are you about your career path?</h2>
+              <p class="text-muted fst-italic mb-4">It's okay to be confused — we're here to help!</p>
+              
+              <div class="certainty-scale-container">
+                <div class="certainty-option" data-value="no-clue">
+                  <div class="option-emoji">😵</div>
+                  <div class="option-label">No clue at all</div>
+                </div>
+                <div class="certainty-option" data-value="kinda-lost">
+                  <div class="option-emoji">😕</div>
+                  <div class="option-label">Kinda lost</div>
+                </div>
+                <div class="certainty-option" data-value="exploring">
+                  <div class="option-emoji">🤔</div>
+                  <div class="option-label">Exploring options</div>
+                </div>
+                <div class="certainty-option" data-value="fairly-clear">
+                  <div class="option-emoji">😌</div>
+                  <div class="option-label">Fairly clear</div>
+                </div>
+                <div class="certainty-option" data-value="very-sure">
+                  <div class="option-emoji">😎</div>
+                  <div class="option-label">100% sure</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="quiz-navigation mt-4 d-flex justify-content-between">
+              <button id="prev-btn" class="btn btn-outline-secondary px-4">
+                <i class="fas fa-chevron-left me-2"></i> Back
+              </button>
+              <button id="next-btn" class="btn btn-primary px-4">
+                Next <i class="fas fa-chevron-right ms-2"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Results Screen -->
+          <div id="results-screen" class="screen">
+            <div class="text-center mb-4">
+              <div class="emoji-container mb-3">🎉</div>
+              <div class="top-match-badge mb-3">Top Match 🎯</div>
+              <h1 class="fw-bold mb-3">Your Path Awaits!</h1>
+              <p id="result-summary" class="text-muted"></p>
+            </div>
+
+            <div class="mb-4">
+              <h2 class="fw-bold mb-3">Top Course Recommendations</h2>
+              <div id="recommendations-container">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <h2 class="fw-bold mb-3">Suggested Colleges</h2>
+              <div id="colleges-container">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <div class="d-grid gap-3">
+              <button class="btn btn-primary btn-lg py-3">
+                Find 15 Best Colleges <i class="fas fa-arrow-right ms-2"></i>
+              </button>
+              <button class="btn btn-outline-primary btn-lg py-3">
+                Talk to a Counselor <i class="fas fa-headset ms-2"></i>
+              </button>
+              <button class="btn btn-outline-secondary btn-lg py-3">
+                Share Results <i class="fas fa-share-alt ms-2"></i>
+              </button>
+              <button id="retake-btn" class="btn btn-outline-secondary btn-lg py-3">
+                Retake Quiz <i class="fas fa-redo ms-2"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Hammer.js for touch gestures -->
+  <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+  <!-- Custom JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>

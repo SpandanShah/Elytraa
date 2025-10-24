@@ -1,0 +1,136 @@
+## 📋 Fun Quiz Questions for Student Onboarding
+
+### 🟣 **1. What was your 12th stream?**
+
+> *“Let’s start with the basics — what world were you living in for the past 2 years?”*
+
+* 🔬 Science
+* 📈 Commerce
+* 🎨 Arts
+* 🧪 Mixed Subjects
+* 🤷‍♂️ Not Sure
+
+---
+
+### 🟠 **2. Which subject did you actually enjoy?**
+
+> *“Be honest. Which class didn’t feel like torture?” (Pick up to 3)*
+
+* 🧪 Chemistry
+* 🔢 Maths
+* 🌍 Geography
+* 💻 Computers
+* 💬 English
+* 🖼️ Drawing
+* 📚 Business
+* 🎵 Music
+* ⚖️ Political Science
+* 🧠 Psychology
+* 📜 History
+* 🧬 Biology
+
+---
+
+### 🟡 **3. What kind of stuff excites you the most?**
+
+> *“What makes your brain go ‘Yesss this is fun!’?”*
+
+* 👨‍💻 Building apps / websites
+* 🎤 Talking to people / public speaking
+* 🧮 Solving logic puzzles
+* ✍️ Writing or designing
+* 📈 Running a business or project
+* 💡 Coming up with ideas
+* 👨‍⚖️ Debating or discussing social issues
+* 🧘‍♂️ Understanding human behavior
+* 🎬 Making videos / content
+* 🤷‍♀️ Still figuring it out
+
+---
+
+### 🟢 **4. How do you like to work?**
+
+> *“What type of vibe are you into when you’re getting things done?”*
+
+* 🧍 Alone – Deep focus mode
+* 👨‍👩‍👧‍👦 Teamwork – Brainstorm together
+* 🕺 Fast & exciting – Love quick results
+* 🧘 Calm and creative – I need space
+* 📋 Structured – Tell me the rules and I’ll follow
+* 🤸 Flexible – I want freedom
+
+---
+
+### 🔵 **5. What’s your dream kind of job?**
+
+> *“Imagine it’s 2030. What are you doing?”*
+
+* 👨‍💻 Tech expert building cool stuff
+* 🧑‍🏫 Teaching, guiding or mentoring
+* 🧑‍⚖️ Arguing cases in court or policy making
+* 🎨 Designing, creating, or storytelling
+* 📊 Managing a startup or business
+* 👩‍🔬 Researching, discovering new things
+* 🎥 Influencing or content creation
+* 👨‍🔬 Working in labs or hospitals
+* 🤝 Helping people directly (NGO, social work)
+* 🤷‍♂️ Not sure yet
+
+---
+
+### 🟣 **6. What kind of college location do you prefer?**
+
+> *“Where would you love to spend your next few years?”*
+
+* 🏙️ Big City – I love the hustle
+* 🏡 Peaceful Town – Less chaos, more focus
+* 🏞️ Campus in nature – Green and clean
+* 🧭 Open to anywhere – Just want a good college
+* 🏠 Close to home
+
+---
+
+### 🟠 **7. Which mode of learning are you comfortable with?**
+
+> *“Books, YouTube, Projects, or People?”*
+
+* 📚 Theory-heavy – I like reading and lectures
+* 🛠️ Practical – Hands-on, real-world work
+* 🧑‍🏫 Mentoring – Need a guide or coach
+* 💻 Online – I’m okay with virtual learning too
+* 🎥 Visual learning – Videos, animations, etc.
+
+---
+
+### 🟡 **8. What’s your language preference for studying?**
+
+> *“Be honest, which language helps you understand best?”*
+
+* 🇬🇧 English
+* 🇮🇳 Hindi
+* 🌐 Comfortable with both
+* 🗣️ Regional Language preferred (Gujarati, Tamil, etc.)
+
+---
+
+### 🟢 **9. What is your expected college fee range (per year)?**
+
+> *“Money doesn’t define your dreams, but it helps us guide you better.”*
+
+* 🟢 ₹0–₹50,000
+* 🟡 ₹50,000–₹1,00,000
+* 🔵 ₹1,00,000–₹2,00,000
+* 🟠 ₹2,00,000+
+* ⚪ I’m looking for scholarship options
+
+---
+
+### 🔵 **10. Are you open to exploring non-traditional careers or skill-based diplomas?**
+
+> *“Let’s say instead of a degree, you get real skills + job in 1–2 years. Interested?”*
+
+* ✅ Yes, if it leads to a good career
+* 🤔 Maybe, I’m curious
+* 🚫 No, I want a full college degree
+
+---
