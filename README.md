@@ -1,5 +1,4 @@
-# Elytraa
-The Billion Dollor
+# UniversityPredictor
 
 # University Recommendation System – V0.1
 
