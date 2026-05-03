@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'predictor',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -77,12 +78,14 @@ WSGI_APPLICATION = 'UniversityPredictor.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': config(
+            'DB_ENGINE', default='django.db.backends.postgresql'
+        ),
         'NAME': config('DB_NAME', default='university_predictor'),
         'USER': config('DB_USER', default='postgres'),
         'PASSWORD': config('DB_PASSWORD', default='root'),
         'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
+        'PORT': config('DB_PORT', default='5433'),
     }
 }
 
@@ -126,6 +129,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -134,7 +138,22 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
     ],
+    'EXCEPTION_HANDLER': 'predictor.views.custom_exception_handler',
 }
+
+# Google OAuth 2.0 Configuration
+# Set these in your .env file to enable Google sign-in.
+# If GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is empty,
+# Google sign-in is disabled.
+GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID', default='')
+GOOGLE_CLIENT_SECRET = config('GOOGLE_CLIENT_SECRET', default='')
+GOOGLE_REDIRECT_URI = config(
+    'GOOGLE_REDIRECT_URI',
+    default='http://localhost:8000/api/auth/google/callback/',
+)

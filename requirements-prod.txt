@@ -1,0 +1,15 @@
+# Core
+Django==5.1
+djangorestframework==3.15.2
+python-decouple==3.8
+
+# Database (MySQL for PythonAnywhere)
+mysqlclient==2.2.7
+
+# Data import
+pandas==2.3.2
+openpyxl==3.1.5
+numpy==2.3.2
+
+# Google OAuth
+requests==2.32.3

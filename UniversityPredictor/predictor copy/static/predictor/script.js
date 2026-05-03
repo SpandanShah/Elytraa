@@ -16,7 +16,6 @@ const resultsSection     = document.getElementById('results-section');
 const resultsContainer   = document.getElementById('results-container');
 const resultsSummaryText = document.getElementById('results-summary-text');
 const navAuthArea        = document.getElementById('nav-auth-area');
-const hamburgerToggle    = document.getElementById('hamburger-toggle');
 
 // Auth modal elements
 const authModal          = document.getElementById('auth-modal');
@@ -70,73 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Listen for round/board selection changes to show inline warnings
   roundSelect.addEventListener('change', checkLockedSelection);
   boardSelect.addEventListener('change', checkLockedSelection);
-
-  // Hamburger menu toggle
-  if (hamburgerToggle) {
-    hamburgerToggle.addEventListener('click', toggleMobileMenu);
-  }
-
-  // Close mobile menu on resize past 768px
-  window.addEventListener('resize', () => {
-    if (window.innerWidth > 768) {
-      closeMobileMenu();
-    }
-  });
 });
-
-// ── Mobile menu toggle ───────────────────────────────────────────────── //
-let _outsideClickHandler = null;
-
-function toggleMobileMenu() {
-  const authNav = document.querySelector('.auth-nav');
-  if (!authNav) return;
-
-  const isOpen = authNav.classList.contains('nav-menu-open');
-  if (isOpen) {
-    closeMobileMenu();
-  } else {
-    openMobileMenu();
-  }
-}
-
-function openMobileMenu() {
-  const authNav = document.querySelector('.auth-nav');
-  if (!authNav) return;
-
-  authNav.classList.add('nav-menu-open');
-  hamburgerToggle.setAttribute('aria-expanded', 'true');
-
-  // Close when clicking outside .auth-nav
-  _outsideClickHandler = (e) => {
-    if (!authNav.contains(e.target)) {
-      closeMobileMenu();
-    }
-  };
-  document.addEventListener('click', _outsideClickHandler);
-
-  // Close when a link/button inside the menu is clicked
-  const navArea = document.getElementById('nav-auth-area');
-  if (navArea) {
-    navArea.querySelectorAll('a, button').forEach(el => {
-      el.addEventListener('click', closeMobileMenu, { once: true });
-    });
-  }
-}
-
-function closeMobileMenu() {
-  const authNav = document.querySelector('.auth-nav');
-  if (!authNav) return;
-
-  authNav.classList.remove('nav-menu-open');
-  if (hamburgerToggle) {
-    hamburgerToggle.setAttribute('aria-expanded', 'false');
-  }
-
-  if (_outsideClickHandler) {
-    document.removeEventListener('click', _outsideClickHandler);
-    _outsideClickHandler = null;
-  }
-}
 
 // ── Auth status ──────────────────────────────────────────────────────── //
 async function checkAuthStatus() {
@@ -466,13 +399,6 @@ function buildCourseChips(keywords) {
     courseCheckboxes.appendChild(input);
     courseCheckboxes.appendChild(label);
   });
-
-  // Check for overflow and toggle scroll indicator class
-  if (courseCheckboxes.scrollHeight > courseCheckboxes.clientHeight) {
-    courseCheckboxes.classList.add('has-overflow');
-  } else {
-    courseCheckboxes.classList.remove('has-overflow');
-  }
 }
 
 // ── 2. Form submission ───────────────────────────────────────────────── //
