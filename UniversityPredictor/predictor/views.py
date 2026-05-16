@@ -6,16 +6,23 @@ API views for the University Predictor.
 Endpoints:
     GET  /              → Render the main HTML page (index.html)
     POST /api/predict/  → Run prediction, return JSON results
-    GET  /api/options/  → Return dropdown data (categories, boards, course keywords)
+    GET  /api/options/  → Return dropdown data (categories, boards,
+                          course keywords)
     POST /api/upload/   → (stub) Upload new Excel data file
 """
 
 import logging
 
 from django.shortcuts import render
+from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.exceptions import NotAuthenticated, AuthenticationFailed
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
+from rest_framework.views import exception_handler as drf_exception_handler
+
+from accounts.models import PredictionLog
 
 from .serializers import (
     DropdownOptionsSerializer,
@@ -27,15 +34,27 @@ from .services import PredictionService
 logger = logging.getLogger(__name__)
 
 
+def custom_exception_handler(exc, context):
+    """
+    Return {"success": false, "error": "Authentication required."} on 401/403.
+    """
+    response = drf_exception_handler(exc, context)
+    if response is not None and isinstance(
+        exc, (NotAuthenticated, AuthenticationFailed)
+    ):
+        response.data = {"success": False, "error": "Authentication required."}
+        response.status_code = status.HTTP_403_FORBIDDEN
+    return response
+
+
+@ensure_csrf_cookie
 def index(request):
-    """
-    GET /
-    Renders the main HTML template with the student input form.
-    """
+    """GET / — Renders the main HTML template."""
     return render(request, "predictor/index.html")
 
 
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def predict(request):
     """
     POST /api/predict/
@@ -73,6 +92,64 @@ def predict(request):
 
     data = input_serializer.validated_data
 
+    # --- Access-tier checks (run before rate limiting) ---
+    profile = request.user.profile
+
+    # Task 3.1: Round access check
+    requested_round = data.get("round")
+    if requested_round == 2 and not profile.can_access_round2:
+        return Response(
+            {
+                "success": False,
+                "error": (
+                    "Round 2 predictions are not available for free users."
+                ),
+            },
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    if requested_round == 3 and not profile.can_access_round3:
+        return Response(
+            {
+                "success": False,
+                "error": (
+                    "Round 3 predictions are not available for free users."
+                ),
+            },
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    # Task 3.2: Board access check
+    requested_board = data.get("board")
+    if (
+        requested_board
+        and requested_board.upper() == "JEE"
+        and not profile.can_access_jee
+    ):
+        return Response(
+            {
+                "success": False,
+                "error": (
+                    "JEE board predictions are not available for free users."
+                ),
+            },
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    # Task 3.3: Daily rate-limit check
+    today_count = PredictionLog.count_today(request.user)
+    if today_count >= profile.daily_prediction_limit:
+        return Response(
+            {
+                "success": False,
+                "error": (
+                    "Daily prediction limit reached. "
+                    "Please try again tomorrow."
+                ),
+            },
+            status=status.HTTP_429_TOO_MANY_REQUESTS,
+        )
+
+    # --- Run prediction service ---
     try:
         service = PredictionService()
         results = service.predict(
@@ -81,6 +158,7 @@ def predict(request):
             board=data.get("board"),
             course_preferences=data.get("course_preferences"),
             min_results=data.get("min_results", 15),
+            round_num=data.get("round"),
         )
     except ValueError as exc:
         logger.error("Prediction ValueError: %s", exc)
@@ -91,9 +169,17 @@ def predict(request):
     except Exception as exc:
         logger.exception("Unexpected error during prediction: %s", exc)
         return Response(
-            {"success": False, "count": 0, "results": [], "error": "Internal server error."},
+            {
+                "success": False,
+                "count": 0,
+                "results": [],
+                "error": "Internal server error.",
+            },
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
+    # Task 3.3: Log successful prediction for rate limiting
+    PredictionLog.objects.create(user=request.user)
 
     result_serializer = PredictionResultSerializer(results, many=True)
     return Response(
@@ -108,6 +194,7 @@ def predict(request):
 
 
 @api_view(["GET"])
+@permission_classes([AllowAny])
 def options(request):
     """
     GET /api/options/
