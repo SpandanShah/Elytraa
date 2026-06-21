@@ -35,11 +35,11 @@ class PredictionService:
             "business systems", "design",
         ],
         "aero": [
-            "aero", "aeronautical", "aerospace", "aviation",
+            "aero", "aeronaut", "aerospace", "aviation",
         ],
         "agriculture": [
-            "agriculture", "agricultural", "farm", "food", "dairy",
-            "biochemical", "irrigation",
+            "agricultur", "farm", "food", "dairy",
+            "biochem", "irrigation",
         ],
         "artificial intelligence": [
             "ai", "artificial intelligence", "machine learning", "ml",
@@ -50,51 +50,51 @@ class PredictionService:
             "mechatronics", "production",
         ],
         "biotech": [
-            "biotech", "biotechnology", "bio", "biomedical",
-            "bioinformatics", "biochemical",
+            "biotech", "bio", "biomedic",
+            "bioinformat", "biochem",
         ],
         "chemical": [
-            "chemical", "petrochemical", "environmental", "pharmaceutical",
-            "green technology", "sustainability", "polymer", "plastic",
-            "rubber", "materials", "metallurgical",
+            "chemical", "petrochem", "environ", "pharmac",
+            "green technology", "sustainab", "polymer", "plastic",
+            "rubber", "material", "metallurg",
         ],
         "civil": [
-            "civil", "construction", "infrastructure", "water management",
-            "irrigation", "surveying", "transportation", "structural",
-            "urban", "environmental", "geo", "climate",
+            "civil", "construct", "infrastructure", "water management",
+            "irrigation", "survey", "transport", "structural",
+            "urban", "environ", "geo", "climate",
         ],
         "electrical": [
             "electrical", "power", "power electronics",
-            "electronics & electrical", "energy", "renewable",
+            "electronics & electrical", "energy", "renew",
             "sustainable energy",
         ],
         "electronics": [
-            "electronics", "communication", "ece", "instrumentation",
-            "control", "telecommunication", "embedded", "vlsi", "signal",
-            "microelectronics",
+            "electronics", "communic", "ece", "instrument",
+            "control", "telecomm", "embedded", "vlsi", "signal",
+            "microelectron",
         ],
         "mechanical": [
-            "mechanical", "automobile", "production", "manufacturing",
-            "mechatronics", "robotics", "automation", "thermal", "design",
+            "mechanical", "automobile", "production", "manufactur",
+            "mechatron", "robot", "automat", "thermal", "design",
             "cad", "electric vehicle",
         ],
         "robotics": [
-            "robotics", "automation", "mechatronics", "ai",
+            "robot", "automat", "mechatron", "ai",
             "machine learning", "intelligent systems",
         ],
         "marine": ["marine", "ocean", "naval"],
-        "metallurgy": ["metallurgy", "metallurgical", "materials", "foundry"],
+        "metallurgy": ["metallurg", "material", "foundry"],
         "petroleum": [
-            "petroleum", "petrochemical", "chemical", "oil", "gas", "refinery",
+            "petroleum", "petrochem", "chemical", "oil", "gas", "refinery",
         ],
-        "pharmaceutical": ["pharma", "pharmaceutical", "chemical", "biotech"],
-        "food": ["food", "dairy", "processing", "agriculture", "agricultural"],
+        "pharmaceutical": ["pharma", "pharmac", "chemical", "biotech"],
+        "food": ["food", "dairy", "processing", "agricultur"],
         "environmental": [
-            "environmental", "climate", "sustainability", "green", "ecology",
+            "environ", "climate", "sustainab", "green", "ecology",
             "energy", "civil",
         ],
         "energy": [
-            "energy", "power", "renewable", "sustainable", "solar",
+            "energy", "power", "renew", "sustainab", "solar",
             "electrical", "mechanical",
         ],
         "textile": [
@@ -102,16 +102,16 @@ class PredictionService:
         ],
         "plastic": ["plastic", "polymer", "rubber", "chemical", "material"],
         "production": [
-            "production", "manufacturing", "industrial", "mechanical",
+            "production", "manufactur", "industrial", "mechanical",
         ],
         "fire": [
-            "fire", "safety", "environment", "health", "hazard", "industrial",
+            "fire", "safety", "environ", "health", "hazard", "industrial",
         ],
         "mathematics": [
-            "mathematics", "computing", "cs", "data science",
-            "applied mathematics",
+            "mathemat", "computing", "cs", "data science",
+            "applied math",
         ],
-        "mining": ["mining", "geology", "geoscience", "earth", "metallurgy"],
+        "mining": ["mining", "geolog", "geoscien", "earth", "metallurg"],
     }
 
     def __init__(self):
