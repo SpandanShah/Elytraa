@@ -36,6 +36,7 @@ const registerSubmit     = document.getElementById('register-submit');
 
 // ── Access tier state ──────────────────────────────────────────────── //
 let userAccessFlags = null;
+let isStaffUser = false;
 
 // CSRF token (read from cookie, set by Django)
 function getCsrfToken() {
@@ -145,8 +146,10 @@ async function checkAuthStatus() {
     const json = await res.json();
     renderNavAuth(json);
     if (json.authenticated) {
+      isStaffUser = json.is_staff || false;
       await fetchAccessFlags();
     } else {
+      isStaffUser = false;
       userAccessFlags = null;
       updateLockIndicators();
       updatePredictionCounter();
@@ -563,6 +566,9 @@ async function handlePredict() {
     resultsSection.style.display = 'block';
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+    // Show export button for admin users
+    showExportButton(rank, category, board, coursePrefs, minResults, roundNum);
+
     // Update prediction counter after successful prediction
     await fetchAccessFlags();
 
@@ -720,4 +726,78 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+
+// ── Export to Excel (admin only) ─────────────────────────────────────── //
+function showExportButton(rank, category, board, coursePrefs, minResults, roundNum) {
+  // Remove existing export button if any
+  const existing = document.getElementById('export-btn');
+  if (existing) existing.remove();
+
+  // Only show for staff/admin users
+  if (!isStaffUser) return;
+
+  const btn = document.createElement('button');
+  btn.id = 'export-btn';
+  btn.className = 'btn-export';
+  btn.innerHTML = '<i class="fas fa-file-excel me-2"></i>Export to Excel';
+  btn.addEventListener('click', () => handleExport(rank, category, board, coursePrefs, minResults, roundNum));
+
+  // Insert in the results summary bar
+  const summaryBar = document.querySelector('.results-summary-bar');
+  if (summaryBar) {
+    summaryBar.appendChild(btn);
+  }
+}
+
+async function handleExport(rank, category, board, coursePrefs, minResults, roundNum) {
+  const btn = document.getElementById('export-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Exporting...';
+  }
+
+  try {
+    const res = await fetch('/api/export/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCsrfToken(),
+      },
+      body: JSON.stringify({
+        rank,
+        category,
+        board,
+        course_preferences: coursePrefs,
+        min_results: minResults,
+        round: roundNum,
+      }),
+    });
+
+    if (!res.ok) {
+      const json = await res.json();
+      showError(json.error || 'Export failed.');
+      return;
+    }
+
+    // Download the file
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Elytraa_Predictions_Rank_${rank}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error('Export error:', err);
+    showError('Export failed. Please try again.');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-file-excel me-2"></i>Export to Excel';
+    }
+  }
 }

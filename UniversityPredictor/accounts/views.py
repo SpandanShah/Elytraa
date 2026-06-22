@@ -123,7 +123,11 @@ def logout_view(request):
 @permission_classes([AllowAny])
 def auth_status(request):
     if request.user.is_authenticated:
-        return Response({"authenticated": True, "email": request.user.email})
+        return Response({
+            "authenticated": True,
+            "email": request.user.email,
+            "is_staff": request.user.is_staff,
+        })
     return Response({"authenticated": False})
 
 

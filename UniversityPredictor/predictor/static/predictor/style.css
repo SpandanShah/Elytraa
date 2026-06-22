@@ -1028,3 +1028,25 @@ select.custom-input {
 .prediction-counter i {
   color: var(--primary-glow);
 }
+
+/* ── Export Button (Admin only) ─────────────────────────────────────── */
+.btn-export {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 100px;
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+}
+.btn-export:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.5);
+}
+.btn-export:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
