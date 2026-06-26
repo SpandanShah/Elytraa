@@ -7,7 +7,8 @@ to use Django ORM instead of pandas DataFrames.
 """
 
 import logging
-from django.db.models import Q
+from django.db.models import F, Q
+from django.db.models.functions import Abs
 
 from .models import University, Course, AdmissionCutoff, ScoreWeight
 
@@ -213,26 +214,60 @@ class PredictionService:
                 logger.warning("No matches for preference: %s", pref)
                 continue
 
-            # Rank eligibility window (mirrors predict_uni_v2.py lines 367-371)
-            eligible = subset.filter(
-                closing_rank__gte=student_rank - (self.tolerance * self.stretch_multiplier),
-            ).order_by("closing_rank")
+            # Determine if student rank is beyond all closing ranks
+            # for this subset (i.e., rank is worse than every college)
+            max_closing = subset.order_by("-closing_rank").values_list(
+                "closing_rank", flat=True
+            ).first()
+            rank_beyond_all = (
+                max_closing is not None
+                and student_rank > max_closing + (self.tolerance * self.stretch_multiplier)
+            )
 
-            # Fallback: if too few results, take top colleges by closing rank
-            if eligible.count() < min_results:
+            if rank_beyond_all:
+                # Approach C: rank exceeds all closing ranks — show closest
+                # matches sorted by proximity to student rank
+                # Cap at 3000 rank distance to avoid unrealistic results
                 logger.info(
-                    "Only %d eligible for %s, adding top colleges",
-                    eligible.count(), pref,
+                    "Rank %d exceeds max closing %s for %s, "
+                    "using proximity sort",
+                    student_rank, max_closing, pref,
                 )
-                top_ids = list(
-                    subset.order_by("closing_rank")
-                    .values_list("id", flat=True)[:min_results]
+                max_distance = 3000
+
+                eligible = (
+                    subset.annotate(
+                        rank_distance=Abs(F("closing_rank") - student_rank)
+                    )
+                    .filter(rank_distance__lte=max_distance)
+                    .order_by("rank_distance")[:min_results]
                 )
-                eligible_ids = list(eligible.values_list("id", flat=True))
-                combined_ids = list(set(eligible_ids + top_ids))
-                eligible = AdmissionCutoff.objects.filter(
-                    id__in=combined_ids
-                ).select_related("course", "course__university").order_by("closing_rank")
+            else:
+                # Normal eligibility window
+                eligible = subset.filter(
+                    closing_rank__gte=student_rank - (self.tolerance * self.stretch_multiplier),
+                ).order_by("closing_rank")
+
+                # Fallback: if too few results and rank is good (not beyond),
+                # take top colleges by closing rank
+                if eligible.count() < min_results:
+                    logger.info(
+                        "Only %d eligible for %s, adding top colleges",
+                        eligible.count(), pref,
+                    )
+                    top_ids = list(
+                        subset.order_by("closing_rank")
+                        .values_list("id", flat=True)[:min_results]
+                    )
+                    eligible_ids = list(
+                        eligible.values_list("id", flat=True)
+                    )
+                    combined_ids = list(set(eligible_ids + top_ids))
+                    eligible = AdmissionCutoff.objects.filter(
+                        id__in=combined_ids
+                    ).select_related(
+                        "course", "course__university"
+                    ).order_by("closing_rank")
 
             count = 0
             for cutoff in eligible:
