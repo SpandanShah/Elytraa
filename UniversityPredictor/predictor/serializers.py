@@ -55,6 +55,13 @@ class PredictionInputSerializer(serializers.Serializer):
         allow_null=True,
         help_text="ACPC admission round (1, 2, or 3). Omit for all rounds.",
     )
+    inst_types = serializers.ListField(
+        child=serializers.CharField(max_length=30, allow_blank=False),
+        required=False,
+        default=None,
+        allow_null=True,
+        help_text="Institute types, e.g. ['govt', 'gia']. Staff-only filter.",
+    )
 
     def validate_category(self, value):
         """Convert empty string to None."""
@@ -98,3 +105,4 @@ class DropdownOptionsSerializer(serializers.Serializer):
     boards = serializers.ListField(child=serializers.CharField())
     rounds = serializers.ListField(child=serializers.IntegerField())
     course_keywords = serializers.ListField(child=serializers.CharField())
+    inst_types = serializers.ListField(child=serializers.CharField())

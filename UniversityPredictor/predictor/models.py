@@ -16,12 +16,10 @@ class University(models.Model):
     inst_type = models.CharField(
         max_length=30, blank=True, default='',
         choices=[
-            ('govt', 'Government'),
-            ('gia', 'Grant-in-Aid'),
+            ('govt_gia', 'Government / GIA'),
             ('self_finance', 'Self-Finance'),
-            ('private', 'Private'),
         ],
-        help_text="Institute type: govt, gia, self_finance, private"
+        help_text="Institute type: govt_gia, self_finance"
     )
 
     # Infrastructure Score Components (0-10 scale)

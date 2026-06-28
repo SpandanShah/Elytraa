@@ -37,6 +37,7 @@ const registerSubmit     = document.getElementById('register-submit');
 // ── Access tier state ──────────────────────────────────────────────── //
 let userAccessFlags = null;
 let isStaffUser = false;
+let availableInstTypes = [];
 
 // CSRF token (read from cookie, set by Django)
 function getCsrfToken() {
@@ -148,11 +149,13 @@ async function checkAuthStatus() {
     if (json.authenticated) {
       isStaffUser = json.is_staff || false;
       await fetchAccessFlags();
+      renderInstTypeFilter();
     } else {
       isStaffUser = false;
       userAccessFlags = null;
       updateLockIndicators();
       updatePredictionCounter();
+      renderInstTypeFilter();
     }
   } catch (_) {
     renderNavAuth({ authenticated: false });
@@ -432,6 +435,8 @@ async function loadOptions() {
     populateSelect(categorySelect, json.data.categories, 'All Categories (no filter)');
     populateSelect(boardSelect, json.data.boards, 'All Boards (no filter)');
     buildCourseChips(json.data.course_keywords);
+    availableInstTypes = json.data.inst_types || [];
+    renderInstTypeFilter();
   } catch (err) {
     console.error('Failed to load options:', err);
   }
@@ -522,6 +527,7 @@ async function handlePredict() {
         course_preferences: coursePrefs,
         min_results: minResults,
         round: roundNum,
+        inst_types: getSelectedInstTypes(),
       }),
     });
 
@@ -729,6 +735,66 @@ function escapeHtml(str) {
 }
 
 
+// ── Institute Type Filter (staff only) ────────────────────────────────── //
+const INST_TYPE_LABELS = {
+  govt_gia: 'Government / GIA',
+  self_finance: 'Self-Finance',
+};
+
+function renderInstTypeFilter() {
+  const existing = document.getElementById('inst-type-filter');
+  if (existing) existing.remove();
+
+  // Only show for staff users who have inst_types available
+  if (!isStaffUser || availableInstTypes.length === 0) return;
+
+  const container = document.createElement('div');
+  container.id = 'inst-type-filter';
+  container.className = 'mb-4 inst-type-filter';
+  container.innerHTML = `
+    <label class="form-label">
+      <i class="fas fa-building text-accent me-2"></i>
+      Institute Type
+      <span class="optional-tag">staff only — all if none selected</span>
+    </label>
+    <div id="inst-type-checkboxes" class="inst-type-checkboxes"></div>
+  `;
+
+  // Insert before the course preferences section
+  const courseSection = courseCheckboxes.closest('.mb-4');
+  if (courseSection) {
+    courseSection.parentNode.insertBefore(container, courseSection);
+  }
+
+  const checkboxContainer = container.querySelector('#inst-type-checkboxes');
+  availableInstTypes.forEach(type => {
+    const id = `inst-type-${type}`;
+    const label = INST_TYPE_LABELS[type] || type;
+
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.className = 'inst-type-chip visually-hidden';
+    input.value = type;
+    input.id = id;
+
+    const lbl = document.createElement('label');
+    lbl.htmlFor = id;
+    lbl.className = 'course-chip-label';
+    lbl.textContent = label;
+
+    checkboxContainer.appendChild(input);
+    checkboxContainer.appendChild(lbl);
+  });
+}
+
+function getSelectedInstTypes() {
+  const container = document.getElementById('inst-type-checkboxes');
+  if (!container) return null;
+  const checked = container.querySelectorAll('input.inst-type-chip:checked');
+  if (checked.length === 0) return null;
+  return Array.from(checked).map(cb => cb.value);
+}
+
 // ── Export to Excel (admin only) ─────────────────────────────────────── //
 function showExportButton(rank, category, board, coursePrefs, minResults, roundNum) {
   // Remove existing export button if any
@@ -772,6 +838,7 @@ async function handleExport(rank, category, board, coursePrefs, minResults, roun
         course_preferences: coursePrefs,
         min_results: minResults,
         round: roundNum,
+        inst_types: getSelectedInstTypes(),
       }),
     });
 

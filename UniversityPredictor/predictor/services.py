@@ -134,6 +134,7 @@ class PredictionService:
         course_preferences=None,
         min_results=15,
         round_num=None,
+        inst_types=None,
     ):
         """
         Predict eligible colleges for a student.
@@ -145,6 +146,7 @@ class PredictionService:
             course_preferences (list[str] | None): Preferred course keywords.
             min_results (int): Minimum results to return per course preference.
             round_num (int | None): ACPC admission round (1, 2, or 3).
+            inst_types (list[str] | None): Institute types to filter by (staff-only).
 
         Returns:
             list[dict]: Sorted results (Safe first, then Possible, then Stretch).
@@ -184,6 +186,13 @@ class PredictionService:
         if board and board.strip():
             qs = qs.filter(board__iexact=board.strip())
             logger.info("After board filter: %d records", qs.count())
+
+        # -- Step 3b: Filter by institute type (staff-only) ----------------
+        if inst_types:
+            cleaned = [t.strip() for t in inst_types if t.strip()]
+            if cleaned:
+                qs = qs.filter(course__university__inst_type__in=cleaned)
+                logger.info("After inst_type filter: %d records", qs.count())
 
         # -- Step 4: Resolve course preferences ----------------------------
         if not course_preferences:
@@ -334,11 +343,18 @@ class PredictionService:
             for kw in PredictionService.COURSE_KEYWORDS.keys()
         ]
 
+        inst_types = sorted(
+            University.objects.values_list("inst_type", flat=True)
+            .exclude(inst_type="").exclude(inst_type__isnull=True)
+            .distinct()
+        )
+
         return {
             "categories": list(categories),
             "boards": list(boards),
             "rounds": list(rounds),
             "course_keywords": course_keywords,
+            "inst_types": list(inst_types),
         }
 
     # ------------------------------------------------------------------ #
