@@ -295,7 +295,7 @@ def export_predictions(request):
     headers = [
         "Institution", "Course", "Category", "Board",
         "Opening Rank", "Closing Rank", "Chance",
-        "Course Preference", "University Score", "Round",
+        "Course Preference", "University Score", "Round", "Institute Type",
     ]
     header_font = Font(bold=True, color="FFFFFF")
     header_fill = PatternFill(
@@ -319,6 +319,7 @@ def export_predictions(request):
         ws.cell(row=row_idx, column=8, value=r["preferred_course"])
         ws.cell(row=row_idx, column=9, value=r["university_score"])
         ws.cell(row=row_idx, column=10, value=r["round"])
+        ws.cell(row=row_idx, column=11, value=r.get("inst_type", ""))
 
     # Auto-fit column widths (approximate)
     for col in ws.columns:

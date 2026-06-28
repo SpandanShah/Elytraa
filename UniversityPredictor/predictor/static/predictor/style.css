@@ -1064,3 +1064,11 @@ select.custom-input {
   flex-wrap: wrap;
   gap: 10px;
 }
+
+.inst-type-chip { display: none; }
+.inst-type-chip:checked + .course-chip-label {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(99,102,241,0.4);
+}

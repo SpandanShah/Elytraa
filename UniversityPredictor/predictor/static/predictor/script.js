@@ -669,6 +669,7 @@ function buildCard(college, index) {
       <span><i class="fas fa-tag me-1"></i>Category: <strong>${escapeHtml(college.category)}</strong></span>
       ${college.board ? `<span><i class="fas fa-th me-1"></i>Board: <strong>${escapeHtml(college.board)}</strong></span>` : ''}
       ${college.round ? `<span><i class="fas fa-circle-notch me-1"></i>Round: <strong>${college.round}</strong></span>` : ''}
+      ${college.inst_type ? `<span><i class="fas fa-building me-1"></i>Type: <strong>${escapeInstType(college.inst_type)}</strong></span>` : ''}
     </div>
     <div class="score-row">
       <span class="score-label">Score</span>
@@ -734,6 +735,11 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
+function escapeInstType(type) {
+  const labels = { govt_gia: 'Govt/GIA', self_finance: 'Self-Finance' };
+  return labels[type] || escapeHtml(type);
+}
+
 
 // ── Institute Type Filter (staff only) ────────────────────────────────── //
 const INST_TYPE_LABELS = {
@@ -773,7 +779,7 @@ function renderInstTypeFilter() {
 
     const input = document.createElement('input');
     input.type = 'checkbox';
-    input.className = 'inst-type-chip visually-hidden';
+    input.className = 'inst-type-chip';
     input.value = type;
     input.id = id;
 

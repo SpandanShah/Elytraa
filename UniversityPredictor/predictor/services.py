@@ -304,6 +304,7 @@ class PredictionService:
                     "preferred_course": pref.capitalize(),
                     "university_score": score,
                     "round": cutoff.round,
+                    "inst_type": cutoff.course.university.inst_type or "",
                 })
                 count += 1
 

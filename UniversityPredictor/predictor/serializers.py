@@ -96,6 +96,7 @@ class PredictionResultSerializer(serializers.Serializer):
     preferred_course = serializers.CharField()
     university_score = serializers.FloatField()
     round = serializers.IntegerField()
+    inst_type = serializers.CharField(allow_blank=True)
 
 
 class DropdownOptionsSerializer(serializers.Serializer):
