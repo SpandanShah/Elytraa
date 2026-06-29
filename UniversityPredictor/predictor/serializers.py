@@ -60,7 +60,14 @@ class PredictionInputSerializer(serializers.Serializer):
         required=False,
         default=None,
         allow_null=True,
-        help_text="Institute types, e.g. ['govt', 'gia']. Staff-only filter.",
+        help_text="Institute types, e.g. ['govt_gia']. Staff-only filter.",
+    )
+    districts = serializers.ListField(
+        child=serializers.CharField(max_length=100, allow_blank=False),
+        required=False,
+        default=None,
+        allow_null=True,
+        help_text="Districts/cities, e.g. ['Ahmedabad', 'Surat']. Staff-only.",
     )
 
     def validate_category(self, value):
@@ -107,3 +114,4 @@ class DropdownOptionsSerializer(serializers.Serializer):
     rounds = serializers.ListField(child=serializers.IntegerField())
     course_keywords = serializers.ListField(child=serializers.CharField())
     inst_types = serializers.ListField(child=serializers.CharField())
+    districts = serializers.ListField(child=serializers.CharField())

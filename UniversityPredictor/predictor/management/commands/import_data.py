@@ -251,10 +251,17 @@ class Command(BaseCommand):
                 continue
 
             # University — get or create
+            # Extract district from the last comma in inst_name
+            if "," in inst_name:
+                parts = inst_name.rsplit(",", 1)
+                location = parts[1].strip()
+            else:
+                location = ""
+
             uni, created = University.objects.get_or_create(
                 name=inst_name,
                 defaults={
-                    "location": inst_name,
+                    "location": location,
                     "inst_type": inst_type,
                 },
             )
@@ -264,6 +271,10 @@ class Command(BaseCommand):
                 # Update inst_type if it was empty
                 uni.inst_type = inst_type
                 uni.save(update_fields=["inst_type"])
+            # Update location if it was previously set to full name
+            if not created and (not uni.location or uni.location == inst_name):
+                uni.location = location
+                uni.save(update_fields=["location"])
 
             # Course — get or create
             course, created = Course.objects.get_or_create(

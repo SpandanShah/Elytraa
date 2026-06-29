@@ -1072,3 +1072,17 @@ select.custom-input {
   color: #fff;
   box-shadow: 0 0 12px rgba(99,102,241,0.4);
 }
+
+/* ── District Filter Chips ──────────────────────────────────────────── */
+.district-chip { display: none; }
+.district-chip:checked + .course-chip-label {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(99,102,241,0.4);
+}
+
+.district-checkboxes {
+  max-height: 160px;
+  overflow-y: auto;
+}

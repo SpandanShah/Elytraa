@@ -38,6 +38,7 @@ const registerSubmit     = document.getElementById('register-submit');
 let userAccessFlags = null;
 let isStaffUser = false;
 let availableInstTypes = [];
+let availableDistricts = [];
 
 // CSRF token (read from cookie, set by Django)
 function getCsrfToken() {
@@ -150,12 +151,14 @@ async function checkAuthStatus() {
       isStaffUser = json.is_staff || false;
       await fetchAccessFlags();
       renderInstTypeFilter();
+      renderDistrictFilter();
     } else {
       isStaffUser = false;
       userAccessFlags = null;
       updateLockIndicators();
       updatePredictionCounter();
       renderInstTypeFilter();
+      renderDistrictFilter();
     }
   } catch (_) {
     renderNavAuth({ authenticated: false });
@@ -436,7 +439,9 @@ async function loadOptions() {
     populateSelect(boardSelect, json.data.boards, 'All Boards (no filter)');
     buildCourseChips(json.data.course_keywords);
     availableInstTypes = json.data.inst_types || [];
+    availableDistricts = json.data.districts || [];
     renderInstTypeFilter();
+    renderDistrictFilter();
   } catch (err) {
     console.error('Failed to load options:', err);
   }
@@ -528,6 +533,7 @@ async function handlePredict() {
         min_results: minResults,
         round: roundNum,
         inst_types: getSelectedInstTypes(),
+        districts: getSelectedDistricts(),
       }),
     });
 
@@ -801,6 +807,61 @@ function getSelectedInstTypes() {
   return Array.from(checked).map(cb => cb.value);
 }
 
+function renderDistrictFilter() {
+  const existing = document.getElementById('district-filter');
+  if (existing) existing.remove();
+
+  if (!isStaffUser || availableDistricts.length === 0) return;
+
+  const container = document.createElement('div');
+  container.id = 'district-filter';
+  container.className = 'mb-4 inst-type-filter';
+  container.innerHTML = `
+    <label class="form-label">
+      <i class="fas fa-map-marker-alt text-accent me-2"></i>
+      District / City
+      <span class="optional-tag">staff only — all if none selected</span>
+    </label>
+    <div id="district-checkboxes" class="inst-type-checkboxes district-checkboxes"></div>
+  `;
+
+  // Insert after inst-type-filter or before course preferences
+  const instFilter = document.getElementById('inst-type-filter');
+  const courseSection = courseCheckboxes.closest('.mb-4');
+  if (instFilter) {
+    instFilter.parentNode.insertBefore(container, instFilter.nextSibling);
+  } else if (courseSection) {
+    courseSection.parentNode.insertBefore(container, courseSection);
+  }
+
+  const checkboxContainer = container.querySelector('#district-checkboxes');
+  availableDistricts.forEach(district => {
+    const id = `district-${district.toLowerCase().replace(/\s+/g, '-')}`;
+
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.className = 'district-chip';
+    input.value = district;
+    input.id = id;
+
+    const lbl = document.createElement('label');
+    lbl.htmlFor = id;
+    lbl.className = 'course-chip-label';
+    lbl.textContent = district;
+
+    checkboxContainer.appendChild(input);
+    checkboxContainer.appendChild(lbl);
+  });
+}
+
+function getSelectedDistricts() {
+  const container = document.getElementById('district-checkboxes');
+  if (!container) return null;
+  const checked = container.querySelectorAll('input.district-chip:checked');
+  if (checked.length === 0) return null;
+  return Array.from(checked).map(cb => cb.value);
+}
+
 // ── Export to Excel (admin only) ─────────────────────────────────────── //
 function showExportButton(rank, category, board, coursePrefs, minResults, roundNum) {
   // Remove existing export button if any
@@ -845,6 +906,7 @@ async function handleExport(rank, category, board, coursePrefs, minResults, roun
         min_results: minResults,
         round: roundNum,
         inst_types: getSelectedInstTypes(),
+        districts: getSelectedDistricts(),
       }),
     });
 

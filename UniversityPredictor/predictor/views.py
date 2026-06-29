@@ -145,8 +145,10 @@ def predict(request):
         service = PredictionService()
         # Only pass inst_types filter for staff users (silently ignore otherwise)
         inst_types = None
+        districts = None
         if request.user.is_staff:
             inst_types = data.get("inst_types")
+            districts = data.get("districts")
         results = service.predict(
             student_rank=data["rank"],
             category=data.get("category"),
@@ -155,6 +157,7 @@ def predict(request):
             min_results=data.get("min_results", 15),
             round_num=data.get("round"),
             inst_types=inst_types,
+            districts=districts,
         )
     except ValueError as exc:
         logger.error("Prediction ValueError: %s", exc)
@@ -267,6 +270,7 @@ def export_predictions(request):
             min_results=data.get("min_results", 15),
             round_num=data.get("round"),
             inst_types=data.get("inst_types"),
+            districts=data.get("districts"),
         )
     except ValueError as exc:
         return Response(

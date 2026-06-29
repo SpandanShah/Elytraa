@@ -135,6 +135,7 @@ class PredictionService:
         min_results=15,
         round_num=None,
         inst_types=None,
+        districts=None,
     ):
         """
         Predict eligible colleges for a student.
@@ -147,6 +148,7 @@ class PredictionService:
             min_results (int): Minimum results to return per course preference.
             round_num (int | None): ACPC admission round (1, 2, or 3).
             inst_types (list[str] | None): Institute types to filter by (staff-only).
+            districts (list[str] | None): Districts/cities to filter by (staff-only).
 
         Returns:
             list[dict]: Sorted results (Safe first, then Possible, then Stretch).
@@ -193,6 +195,18 @@ class PredictionService:
             if cleaned:
                 qs = qs.filter(course__university__inst_type__in=cleaned)
                 logger.info("After inst_type filter: %d records", qs.count())
+
+        # -- Step 3c: Filter by district (staff-only) ----------------------
+        # Include colleges with empty location (unknown district)
+        if districts:
+            cleaned = [d.strip() for d in districts if d.strip()]
+            if cleaned:
+                qs = qs.filter(
+                    Q(course__university__location__in=cleaned)
+                    | Q(course__university__location="")
+                    | Q(course__university__location__isnull=True)
+                )
+                logger.info("After district filter: %d records", qs.count())
 
         # -- Step 4: Resolve course preferences ----------------------------
         if not course_preferences:
@@ -350,12 +364,19 @@ class PredictionService:
             .distinct()
         )
 
+        districts = sorted(
+            University.objects.values_list("location", flat=True)
+            .exclude(location="").exclude(location__isnull=True)
+            .distinct()
+        )
+
         return {
             "categories": list(categories),
             "boards": list(boards),
             "rounds": list(rounds),
             "course_keywords": course_keywords,
             "inst_types": list(inst_types),
+            "districts": list(districts),
         }
 
     # ------------------------------------------------------------------ #
