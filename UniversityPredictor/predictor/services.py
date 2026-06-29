@@ -271,26 +271,31 @@ class PredictionService:
                     closing_rank__gte=student_rank - (self.tolerance * self.stretch_multiplier),
                 ).order_by("closing_rank")
 
-                # Fallback: if too few results and rank is good (not beyond),
-                # take top colleges by closing rank
+                # Fallback: if too few results, add colleges closest
+                # to student rank from below (descending from student rank)
                 if eligible.count() < min_results:
                     logger.info(
-                        "Only %d eligible for %s, adding top colleges",
+                        "Only %d eligible for %s, adding closest below",
                         eligible.count(), pref,
                     )
-                    top_ids = list(
-                        subset.order_by("closing_rank")
+                    # Get colleges with closing_rank below eligibility window
+                    # ordered by closest to student rank (descending closing)
+                    fallback_ids = list(
+                        subset.filter(
+                            closing_rank__lt=student_rank - (self.tolerance * self.stretch_multiplier)
+                        )
+                        .order_by("-closing_rank")
                         .values_list("id", flat=True)[:min_results]
                     )
                     eligible_ids = list(
                         eligible.values_list("id", flat=True)
                     )
-                    combined_ids = list(set(eligible_ids + top_ids))
+                    combined_ids = list(set(eligible_ids + fallback_ids))
                     eligible = AdmissionCutoff.objects.filter(
                         id__in=combined_ids
                     ).select_related(
                         "course", "course__university"
-                    ).order_by("closing_rank")
+                    ).order_by("-closing_rank")
 
             count = 0
             for cutoff in eligible:
