@@ -238,7 +238,6 @@ class PredictionService:
                 continue
 
             # Determine if student rank is beyond all closing ranks
-            # for this subset (i.e., rank is worse than every college)
             max_closing = subset.order_by("-closing_rank").values_list(
                 "closing_rank", flat=True
             ).first()
@@ -248,16 +247,13 @@ class PredictionService:
             )
 
             if rank_beyond_all:
-                # Approach C: rank exceeds all closing ranks — show closest
-                # matches sorted by proximity to student rank
-                # Cap at 3000 rank distance to avoid unrealistic results
+                # Rank exceeds all closing ranks — show closest within 3000
                 logger.info(
                     "Rank %d exceeds max closing %s for %s, "
                     "using proximity sort",
                     student_rank, max_closing, pref,
                 )
                 max_distance = 3000
-
                 eligible = (
                     subset.annotate(
                         rank_distance=Abs(F("closing_rank") - student_rank)
@@ -265,54 +261,63 @@ class PredictionService:
                     .filter(rank_distance__lte=max_distance)
                     .order_by("rank_distance")[:min_results]
                 )
-            else:
-                # Normal eligibility window
-                eligible = subset.filter(
-                    closing_rank__gte=student_rank - (self.tolerance * self.stretch_multiplier),
-                ).order_by("closing_rank")
 
-                # Fallback: if too few results, add colleges closest
-                # to student rank from below (descending from student rank)
-                if eligible.count() < min_results:
-                    logger.info(
-                        "Only %d eligible for %s, adding closest below",
-                        eligible.count(), pref,
+                # Process all as-is (all will be Stretch)
+                count = 0
+                for cutoff in eligible:
+                    if count >= min_results:
+                        break
+                    key = (cutoff.course.university.name, cutoff.course.name)
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    chance = self._categorize_chance(
+                        student_rank, cutoff.closing_rank
                     )
-                    # Get colleges with closing_rank below eligibility window
-                    # ordered by closest to student rank (descending closing)
-                    fallback_ids = list(
-                        subset.filter(
-                            closing_rank__lt=student_rank - (self.tolerance * self.stretch_multiplier)
-                        )
-                        .order_by("-closing_rank")
-                        .values_list("id", flat=True)[:min_results]
+                    score = self._calculate_university_score(
+                        cutoff.course.university, cutoff.course
                     )
-                    eligible_ids = list(
-                        eligible.values_list("id", flat=True)
-                    )
-                    combined_ids = list(set(eligible_ids + fallback_ids))
-                    eligible = AdmissionCutoff.objects.filter(
-                        id__in=combined_ids
-                    ).select_related(
-                        "course", "course__university"
-                    ).order_by("-closing_rank")
+                    results.append({
+                        "inst_name": cutoff.course.university.name,
+                        "course_name": cutoff.course.name,
+                        "category": cutoff.category,
+                        "board": cutoff.board or "",
+                        "opening_rank": cutoff.opening_rank,
+                        "closing_rank": cutoff.closing_rank,
+                        "chance": chance,
+                        "preferred_course": pref.capitalize(),
+                        "university_score": score,
+                        "round": cutoff.round,
+                        "inst_type": cutoff.course.university.inst_type or "",
+                    })
+                    count += 1
+                logger.info("Found %d colleges for %s (beyond-all)", count, pref)
+                continue
 
-            count = 0
-            for cutoff in eligible:
-                if count >= min_results:
-                    break
+            # --- Normal path: Balanced mix of Possible, Stretch, Safe ---
 
+            # Step A: Get all eligible colleges (closing_rank >= rank - 500)
+            eligible_qs = subset.filter(
+                closing_rank__gte=student_rank - (self.tolerance * self.stretch_multiplier),
+            ).select_related("course", "course__university").order_by("closing_rank")
+
+            # Categorize eligible into buckets
+            safe_list = []
+            possible_list = []
+            existing_stretch_list = []
+
+            for cutoff in eligible_qs:
                 key = (cutoff.course.university.name, cutoff.course.name)
                 if key in seen:
                     continue
-                seen.add(key)
 
-                chance = self._categorize_chance(student_rank, cutoff.closing_rank)
+                chance = self._categorize_chance(
+                    student_rank, cutoff.closing_rank
+                )
                 score = self._calculate_university_score(
                     cutoff.course.university, cutoff.course
                 )
-
-                results.append({
+                entry = {
                     "inst_name": cutoff.course.university.name,
                     "course_name": cutoff.course.name,
                     "category": cutoff.category,
@@ -324,13 +329,89 @@ class PredictionService:
                     "university_score": score,
                     "round": cutoff.round,
                     "inst_type": cutoff.course.university.inst_type or "",
+                    "_key": key,
+                }
+
+                if chance == "Possible":
+                    possible_list.append(entry)
+                elif chance == "Stretch":
+                    existing_stretch_list.append(entry)
+                else:
+                    safe_list.append(entry)
+
+            # Step B: Get additional stretch candidates from below
+            # (closing_rank below eligibility window but within 3000 of rank)
+            max_distance = 3000
+            stretch_below_qs = (
+                subset.filter(
+                    closing_rank__lt=student_rank - (self.tolerance * self.stretch_multiplier),
+                    closing_rank__gte=student_rank - max_distance,
+                )
+                .select_related("course", "course__university")
+                .order_by("-closing_rank")
+            )
+
+            extra_stretch_list = []
+            for cutoff in stretch_below_qs:
+                key = (cutoff.course.university.name, cutoff.course.name)
+                if key in seen:
+                    continue
+                # Check not already in existing lists
+                if any(e["_key"] == key for e in possible_list + existing_stretch_list + safe_list):
+                    continue
+
+                score = self._calculate_university_score(
+                    cutoff.course.university, cutoff.course
+                )
+                extra_stretch_list.append({
+                    "inst_name": cutoff.course.university.name,
+                    "course_name": cutoff.course.name,
+                    "category": cutoff.category,
+                    "board": cutoff.board or "",
+                    "opening_rank": cutoff.opening_rank,
+                    "closing_rank": cutoff.closing_rank,
+                    "chance": "Stretch",
+                    "preferred_course": pref.capitalize(),
+                    "university_score": score,
+                    "round": cutoff.round,
+                    "inst_type": cutoff.course.university.inst_type or "",
+                    "_key": key,
                 })
-                count += 1
 
-            logger.info("Found %d colleges for %s", count, pref)
+            # Step C: Allocate slots — Possible first, then Stretch, then Safe
+            all_stretch = existing_stretch_list + extra_stretch_list
+            possible_count = len(possible_list)
+            remaining_slots = min_results - possible_count
 
-        # -- Step 7: Sort: Safe → Possible → Stretch, then closing rank ---
-        chance_order = {"Safe": 0, "Possible": 1, "Stretch": 2}
+            if remaining_slots > 0:
+                # ~45% of remaining slots for stretch
+                stretch_slots = round(remaining_slots * 0.45)
+                safe_slots = remaining_slots - stretch_slots
+            else:
+                stretch_slots = 0
+                safe_slots = 0
+
+            # Take the allocated amounts
+            final_possible = possible_list[:min_results]
+            final_stretch = all_stretch[:stretch_slots]
+            final_safe = safe_list[:safe_slots]
+
+            # Combine and add to results
+            pref_results = final_possible + final_stretch + final_safe
+            for entry in pref_results:
+                seen.add(entry["_key"])
+                # Remove internal key before adding to results
+                entry.pop("_key", None)
+                results.append(entry)
+
+            logger.info(
+                "Found %d for %s (P:%d S_stretch:%d S_safe:%d)",
+                len(pref_results), pref,
+                len(final_possible), len(final_stretch), len(final_safe),
+            )
+
+        # -- Step 7: Sort: Possible → Stretch → Safe, then closing rank ---
+        chance_order = {"Possible": 0, "Stretch": 1, "Safe": 2}
         results.sort(
             key=lambda x: (chance_order.get(x["chance"], 3), x["closing_rank"])
         )

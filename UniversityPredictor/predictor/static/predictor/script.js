@@ -607,9 +607,9 @@ function renderResults(results, rank, category, board) {
 
   resultsSummaryText.innerHTML =
     `${results.length} colleges found${filters ? ` for <strong>${filters}</strong>` : ''} — ` +
-    `<span style="color:var(--safe)">${safe} Safe</span>, ` +
     `<span style="color:var(--possible)">${possible} Possible</span>, ` +
-    `<span style="color:var(--stretch)">${stretch} Stretch</span>`;
+    `<span style="color:var(--stretch)">${stretch} Stretch</span>, ` +
+    `<span style="color:var(--safe)">${safe} Safe</span>`;
 
   const grouped = {};
   results.forEach(r => {
